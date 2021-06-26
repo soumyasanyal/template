@@ -1,7 +1,7 @@
 defaults:
   - scheduler: linear_with_warmup
   - optimizer: adamw
-  - model: ruletaker
+  - model: main
   - dataset: D1
   - setup: rtx_8000
   - training: base

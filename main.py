@@ -5,11 +5,11 @@ from data import DataModule
 from model import MainModel
 
 model_dict = {
-	'model': MainModel,
+	'modelname': MainModel,
 }
 
 monitor_dict = {
-	'model': 'valid_acc_epoch',
+	'modelname': 'valid_acc_epoch',
 }
 
 neptune_api_key = <API_KEY>

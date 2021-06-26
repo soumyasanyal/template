@@ -1,7 +1,0 @@
-train_batch_size: 3
-eval_batch_size: 3
-accumulate_grad_batches: 3
-num_workers: 8
-fp16: False
-gpus: 2
-accelerator: ddp  # required since HF Scheduler has some pickling error with ddp_spawn
