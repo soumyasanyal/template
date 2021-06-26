@@ -1,4 +1,0 @@
-dataset: ruletaker_D2
-train_dataset: depth_leq_2
-dev_dataset: depth_leq_2
-test_dataset: depth_leq_2

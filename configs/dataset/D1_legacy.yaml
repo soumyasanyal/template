@@ -1,4 +1,0 @@
-dataset: ruletaker_D1_legacy
-train_dataset: depth_leq_1_legacy
-dev_dataset: depth_leq_1_legacy
-test_dataset: depth_leq_1_legacy
