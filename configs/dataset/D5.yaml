@@ -1,0 +1,4 @@
+dataset: ruletaker_D5
+train_dataset: depth_leq_5
+dev_dataset: depth_leq_5
+test_dataset: depth_leq_5

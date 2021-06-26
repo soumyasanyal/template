@@ -1,0 +1,3 @@
+model: ruletaker
+arch: roberta_large_race
+name: LIAMF-USP/roberta-large-finetuned-race
