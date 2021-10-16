@@ -2,7 +2,7 @@ defaults:
   - scheduler: linear_with_warmup
   - optimizer: adamw
   - model: main
-  - dataset: D1
+  - dataset: sst2
   - setup: rtx_8000
   - training: base
   - override /hydra/job_logging: none
@@ -11,4 +11,4 @@ defaults:
 seed: 2
 max_epochs: 4
 learning_rate: 1e-5
-save_checkpoint: True
+save_checkpoint: False

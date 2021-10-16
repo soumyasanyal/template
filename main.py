@@ -5,15 +5,19 @@ from data import DataModule
 from model import MainModel
 
 model_dict = {
-	'modelname': MainModel,
+	'bert': MainModel,
 }
 
 monitor_dict = {
-	'modelname': 'valid_acc_epoch',
+	'bert': 'valid_acc_epoch',
 }
 
-neptune_api_key = <API_KEY>
-neptune_project_name = <PROJECT NAME>
+API_LIST = {
+	'soumya': 'eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiI3NWExN2YxNy05Y2MwLTRjOTQtYWYyZS1kNzYzNmFkMTFlNTYifQ==',
+}
+
+neptune_api_key      = API_LIST[get_username()]
+neptune_project_name = 'soumyasanyal/icomgen'
 
 def generate_hydra_overrides():
 	# TODO find a better way to override if possible? Maybe we need to use @hydra.main() for this?
@@ -130,6 +134,7 @@ def main(args, splits='all'):
 			args.dev_dataset,
 			args.test_dataset,
 			args.arch,
+			args.hf_name,
 			train_batch_size=args.train_batch_size,
 			eval_batch_size=args.eval_batch_size,
 			num_workers=args.num_workers,
@@ -139,6 +144,7 @@ def main(args, splits='all'):
 	print(f'Loading {args.model} - {args.arch} model...')
 	model = model_dict[args.model](
 			arch=args.arch,
+			hf_name=args.hf_name,
 			train_batch_size=args.train_batch_size,
 			eval_batch_size=args.eval_batch_size,
 			accumulate_grad_batches=args.accumulate_grad_batches,
@@ -158,7 +164,7 @@ def main(args, splits='all'):
 		args.limit_train_batches = 10
 		args.limit_val_batches = 10
 		args.limit_test_batches = 10
-		# args.max_epochs = 1
+		args.max_epochs = 2
 		# for DEBUG purposes only
 
 	print('Getting Neptune logger...')

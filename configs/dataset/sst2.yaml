@@ -1,0 +1,4 @@
+dataset: sst2
+train_dataset: sst2
+dev_dataset: sst2
+test_dataset: sst2

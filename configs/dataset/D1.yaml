@@ -1,4 +1,0 @@
-dataset: dataset_name
-train_dataset: split_name
-dev_dataset: split_name
-test_dataset: split_name

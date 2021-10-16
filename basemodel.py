@@ -19,10 +19,10 @@ class BaseModel(pl.LightningModule):
 	def calc_acc(self, preds, targets):
 		raise NotImplementedError
 
-	def _run_epoch(self, batch, split):
+	def run_step(self, batch, split):
 		outputs = self(batch)
 		preds   = (outputs > 0).float().squeeze()
-		targets = batch[1]
+		targets = batch['labels']
 		loss    = self.calc_loss(outputs.squeeze(), targets)
 		acc     = self.calc_acc(preds, targets)
 
@@ -33,9 +33,9 @@ class BaseModel(pl.LightningModule):
 			self.log(f'{split}_loss_step', loss.item(), prog_bar=True, sync_dist=True)
 			self.log(f'{split}_acc_step', acc.item(), prog_bar=True, sync_dist=True)
 
-		return {'loss': loss, 'preds': preds, 'targets': batch[1]}
+		return {'loss': loss, 'preds': preds, 'targets': targets}
 
-	def _aggregate_epoch(self, outputs, split):
+	def aggregate_epoch(self, outputs, split):
 		preds   = torch.cat([x['preds'] for x in outputs])
 		targets = torch.cat([x['targets'] for x in outputs])
 		loss    = torch.stack([x['loss'] for x in outputs]).mean()
@@ -55,22 +55,22 @@ class BaseModel(pl.LightningModule):
 		# else:
 		# 	unfreeze_net(self.text_encoder)
 
-		return self._run_epoch(batch, 'train')
+		return self.run_step(batch, 'train')
 
 	def training_epoch_end(self, outputs):
-		self._aggregate_epoch(outputs, 'train')
+		self.aggregate_epoch(outputs, 'train')
 
 	def validation_step(self, batch, batch_idx):
-		return self._run_epoch(batch, 'valid')
+		return self.run_step(batch, 'valid')
 
 	def validation_epoch_end(self, outputs):
-		self._aggregate_epoch(outputs, 'valid')
+		self.aggregate_epoch(outputs, 'valid')
 
 	def test_step(self, batch, batch_idx):
-		return self._run_epoch(batch, 'test')
+		return self.run_step(batch, 'test')
 
 	def test_epoch_end(self, outputs):
-		self._aggregate_epoch(outputs, 'test')
+		self.aggregate_epoch(outputs, 'test')
 
 	def setup(self, stage):
 		if stage == 'fit':
@@ -89,18 +89,17 @@ class BaseModel(pl.LightningModule):
 	@staticmethod
 	def add_model_specific_args(parent_parser):
 		parser = ArgumentParser(parents=[parent_parser], add_help=False)
-		parser.add_argument('--optimizer', 					default='adamw', 					type=str, 		choices=['adamw', 'radam'])
-		parser.add_argument('--model', 						default='', 						type=str, 		choices=['ruletaker'])
-		parser.add_argument('--arch', 						default='',							type=str, 		choices=['roberta_large_race'])
+		parser.add_argument('--model', 						default='', 						type=str,)
+		parser.add_argument('--arch', 						default='',							type=str,)
+		parser.add_argument('--hf_name', 					default='',							type=str)
+		parser.add_argument('--pad_idx',														type=int,)
 
+		parser.add_argument('--optimizer', 					default='adamw', 					type=str, 		choices=['adamw', 'radam'])
 		parser.add_argument('--learning_rate', 				default=1e-5, 						type=float)
 		parser.add_argument('--adam_epsilon', 				default=1e-8, 						type=float)
 		parser.add_argument('--warmup_updates', 			default=0.0, 						type=float)
 		parser.add_argument('--weight_decay', 				default=0.0, 						type=float)
 		parser.add_argument('--lr_scheduler',				default='linear_with_warmup',		type=str, 		choices=['fixed', 'linear_with_warmup'])
 		parser.add_argument('--freeze_epochs',				default=-1,							type=int,)
-		parser.add_argument("--train_batch_size",			default=16,							type=int)
-		parser.add_argument("--eval_batch_size", 			default=16, 						type=int)
-
 
 		return parser

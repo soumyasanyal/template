@@ -1,4 +1,4 @@
-import numpy as np, sys, os, shutil, struct, argparse, csv, math, uuid, jsonlines, types
+import numpy as np, sys, os, shutil, struct, argparse, csv, math, uuid, jsonlines, types, getpass
 import time, socket, logging, itertools, json
 import pickle5 as pickle
 
@@ -25,7 +25,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning.loggers import NeptuneLogger
 # from neptune.new.integrations.pytorch_lightning import NeptuneLogger
 
-import datasets
+from datasets import load_dataset
 from transformers import (
 	AdamW,
 	AutoModelForSequenceClassification,
@@ -54,3 +54,6 @@ def unfreeze_net(module):
 
 def clear_cache():
 	torch.cuda.empty_cache()
+
+def get_username():
+	return getpass.getuser()

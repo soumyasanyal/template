@@ -1,2 +1,3 @@
-model: modelname
-arch: roberta_large
+model: bert
+arch: bert_base
+hf_name: bert-base-uncased

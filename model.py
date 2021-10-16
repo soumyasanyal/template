@@ -3,11 +3,10 @@ from basemodel import BaseModel
 
 
 class MainModel(BaseModel):
-	def __init__(self, arch='roberta_large', train_batch_size=16, eval_batch_size=16, accumulate_grad_batches=1, learning_rate=1e-5, max_epochs=5,
+	def __init__(self, arch='bert_base', hf_name='bert-base-uncased', train_batch_size=16, eval_batch_size=16, accumulate_grad_batches=1, learning_rate=1e-5, max_epochs=5,
 					optimizer='adamw', adam_epsilon=1e-8, weight_decay=0.0, lr_scheduler='linear_with_warmup', warmup_updates=0.0, freeze_epochs=-1, gpus=1):
 		super().__init__(train_batch_size=train_batch_size, max_epochs=max_epochs, gpus=gpus)
 		self.save_hyperparameters()
-		assert arch == 'roberta_large'
 
 		self.p                         = types.SimpleNamespace()
 		self.p.arch                    = arch
@@ -24,7 +23,7 @@ class MainModel(BaseModel):
 		self.p.freeze_epochs           = freeze_epochs
 		self.p.gpus                    = gpus
 
-		self.text_encoder    = AutoModel.from_pretrained(arch)
+		self.text_encoder    = AutoModel.from_pretrained(hf_name)
 		out_dim              = self.text_encoder.config.hidden_size
 		self.classifier      = nn.Linear(out_dim, 1)
 
@@ -34,8 +33,7 @@ class MainModel(BaseModel):
 		self.dropout = torch.nn.Dropout(self.text_encoder.config.hidden_dropout_prob)
 
 	def forward(self, batch):
-		attn_mask = (batch[0] != 1).long()
-		cls_emb   = self.text_encoder(input_ids=batch[0], attention_mask=attn_mask)['pooler_output']
+		cls_emb   = self.text_encoder(input_ids=batch['input_ids'], attention_mask=batch['attn_mask'], token_type_ids=batch['type_ids'])['pooler_output']
 		cls_emb   = self.dropout(cls_emb)
 		logits    = self.classifier(cls_emb)
 
