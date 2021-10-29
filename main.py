@@ -17,7 +17,7 @@ API_LIST = {
 }
 
 neptune_api_key      = API_LIST[get_username()]
-neptune_project_name = 'soumyasanyal/icomgen'
+neptune_project_name = 'soumyasanyal/template'
 
 def generate_hydra_overrides():
 	# TODO find a better way to override if possible? Maybe we need to use @hydra.main() for this?
